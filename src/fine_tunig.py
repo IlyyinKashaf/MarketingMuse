@@ -63,7 +63,7 @@ for i, item in enumerate(summarization_data[:2]):
     print(f"Assistant Response (truncated): {item['assistant_response'][:100]}...\n")
 
 # ── Convert list to Dataset ───────────────────────────────────────────────────
-# ✅ Fix 1: Dataset.from_list() not Datasets.from_list()
+
 summarization_dataset = Dataset.from_list(summarization_data)
 print(f"Converted to Dataset: {summarization_dataset}")
 
@@ -81,7 +81,7 @@ if tokenizer.pad_token is None:
     print(f"Set tokenizer.pad_token to: {tokenizer.pad_token}")
 
 # ── Tokenize function ─────────────────────────────────────────────────────────
-# ✅ Fix 5: Added padding="max_length" for consistent tensor shapes
+
 def tokenize_function(examples):
     # INPUT — goes to Encoder (with task prefix for T5)
     inputs = [f"summarize: {prompt}" for prompt in examples["user_prompt"]]
@@ -104,9 +104,7 @@ def tokenize_function(examples):
 
     label_ids = labels["input_ids"]
 
-    # ✅ Fix 2: Replace pad token id with -100
-    # -100 tells loss function to IGNORE padding positions
-    # Using pad_token_id (not -100) means loss is computed on padding → wrong
+ 
     label_ids = [
         [(token if token != tokenizer.pad_token_id else -100) for token in label]
         for label in label_ids
@@ -144,7 +142,7 @@ model = AutoModelForSeq2SeqLM.from_pretrained(BASE_MODEL)
 print(f"\nLoaded {BASE_MODEL} model.")
 
 # ── Apply LoRA BEFORE data collator ──────────────────────────────────────────
-# ✅ Fix 7: LoRA must be applied before data collator references the model
+
 lora_config = LoraConfig(
     r=8,
     lora_alpha=16,                  # ✅ Adjusted: 2×r is more stable (was 32)
@@ -158,8 +156,7 @@ print(f"\nLoRA applied to {BASE_MODEL}.")
 model.print_trainable_parameters()
 
 # ── Data Collator ─────────────────────────────────────────────────────────────
-# ✅ Fix 2: label_pad_token_id=-100 (not tokenizer.pad_token_id)
-# -100 ensures loss is not computed on padded label positions
+
 data_collator = DataCollatorForSeq2Seq(
     tokenizer=tokenizer,
     model=model,
@@ -169,7 +166,7 @@ data_collator = DataCollatorForSeq2Seq(
 print("Data collator initialized.")
 
 # ── Training Arguments ────────────────────────────────────────────────────────
-# ✅ Fix 3: Seq2SeqTrainingArguments not TrainingArguments
+
 training_args = Seq2SeqTrainingArguments(
     output_dir="./results",
     num_train_epochs=10,            # increased from 3 (small dataset needs more)
@@ -190,7 +187,7 @@ training_args = Seq2SeqTrainingArguments(
 print("Training arguments defined.")
 
 # ── Trainer ───────────────────────────────────────────────────────────────────
-# ✅ Fix 4: Seq2SeqTrainer not Trainer
+
 trainer = Seq2SeqTrainer(
     model=model,
     args=training_args,
@@ -212,12 +209,7 @@ print(f"\n✅ Model saved to: {OUTPUT_DIR}")
 print(f"   Files: {os.listdir(OUTPUT_DIR)}")
 
 # ── Zip with shutil ───────────────────────────────────────────────────────────
-# ✅ Fix 6: Correct shutil.make_archive arguments
-# make_archive(base_name, format, root_dir, base_dir)
-# base_name = output zip path WITHOUT .zip
-# format    = 'zip'
-# root_dir  = parent directory of the folder to zip
-# base_dir  = folder name to zip (relative to root_dir)
+
 
 zip_output = shutil.make_archive(
     base_name=ZIP_FILE_NAME,        # output: fine_tuned_t5_summarizer.zip

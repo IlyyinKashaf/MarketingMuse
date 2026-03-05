@@ -22,3 +22,10 @@ build/
 
 # Logs
 *.log
+
+# Model files
+model/*.zip
+model/*.pkl
+model/*.h5
+model/*.pt
+model/*.pth

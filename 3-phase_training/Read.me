@@ -8,18 +8,20 @@
     - Requires less data for fine-tuning
     - Faster inference and deployment
 - *Model Details*:
-    - Sequence-to-Sequence (Encoder-Decoder) architecture
-    - Fine-tuned on instructional dataset for marketing domain
+    - casual model (Encoder only) architecture
+    - phase 1 Fine-tuned on non-instructional domain specific dataset for marketing domain
+    - phase 2 trained on instrctional data for task specific data 
+    - phase 3 trained on human preffered dataset using dpo technique  
 - *Key Learnings*:
     - Transformer architecture and attention mechanisms
     - Casual vs Sequence-to-Sequence models
     - Encoder-Decoder architecture and applications
-    - Tokenization, embeddings, attention mechanism and masking techniques
+    - Tokenization, embeddings, and masking techniques
     - Lora and qlora 
     - quantization 
 - *Challenges*:
     - Adapting model to marketing-specific terminology
-    - Balancing insight generation with relevance
+    - Training it in 3 phases and handling data according to the need of model for specific phase 
 - *Outcomes*:
     - Model generates actionable marketing insights
     - Identifies target audience and trends
