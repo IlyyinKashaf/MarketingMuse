@@ -1,0 +1,9 @@
+pandas 
+peft 
+bitsandbytes 
+transformers 
+accelerate
+trl
+PyMuPDF
+datasets
+peft
